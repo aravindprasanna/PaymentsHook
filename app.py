@@ -24,7 +24,7 @@ def webhook():
 
 def makeResponse(req):
     json_res = {
-        "data": {
+        "payload": {
           "google": {
             "expectUserResponse": True,
             "isSsml": False,

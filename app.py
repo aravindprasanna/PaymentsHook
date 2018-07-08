@@ -52,6 +52,8 @@ def makeResponse(req):
         }
     }
 
+    return json_res
+
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT',5000))

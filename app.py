@@ -15,40 +15,67 @@ def webhook():
     req = request.get_json(silent=True,force=True)
     print(json.dumps(req,indent=4))
 
-    res = makeResponse(req)
+    query_result = req.get("queryResult")
+    action = query_result.get("action")
+
+    if action == "BillerAdd":
+        res = add_biller(query_result)
+    if res:
+        resp = makeResponse("Biller Added Successfully")
+    else:
+        resp = makeResponse("Unsuccessful")
     res = json.dumps(res,indent=4)
     r = make_response(res)
     r.headers['Content-Type'] = 'application/json'
 
     return r
 
-def makeResponse(req):
+
+def add_biller(query_result):
+    parameters = query_result.get("parameters")
+    biller_ref = parameters.get("biller_ref")
+    biller_name = parameters.get("biller_name")
+
+    input_json = {
+        "user":"hari",
+        "biller_ref": biller_ref,
+        "biller_name": biller_name
+    }
+
+    url = "http://374d5c5e.ngrok.io/billerprofile/"
+    r = requests.post(url,input_json)
+    json_object = r.json()
+    if r.status_code == 201:
+        return True
+    else:
+        return False
+
+
+def makeResponse(speech):
     json_res = {
-        "payload": {
-          "google": {
-            "expectUserResponse": True,
-            "isSsml": False,
-            "noInputPrompts": [],
-            "systemIntent": {
-              "data": {
-                "@type": "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckSpec",
-                "paymentOptions": {
-                  "googleProvidedOptions": {
-                    "prepaidCardDisallowed": False,
-                    "supportedCardNetworks": [
-                      "VISA",
-                      "AMEX"
-                    ],
-                    "tokenizationParameters": {
-                      "parameters": {},
-                      "tokenizationType": "PAYMENT_GATEWAY"
-                    }
-                  }
+        "fulfillmentText": speech,
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        speech
+                    ]
                 }
-              },
-              "intent": "actions.intent.TRANSACTION_REQUIREMENTS_CHECK"
             }
-          }
+        ],
+        "payload": {
+            "google": {
+                "expectUserResponse": True,
+                "richResponse": {
+                    "items": [
+                        {
+                            "simpleResponse": {
+                                "textToSpeech": speech
+                            }
+                        }
+                    ]
+                }
+            }
         }
     }
 

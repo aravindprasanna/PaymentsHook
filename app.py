@@ -50,7 +50,7 @@ def make_payment(query_result):
         "biller_name": "SP Services"
     }
 
-    url = "http://374d5c5e.ngrok.io/payments/"
+    url = "http://c9c856ac.ngrok.io/payments/"
     r = requests.post(url, input_json)
     json_object = r.json()
     if r.status_code == 200:
@@ -70,7 +70,7 @@ def add_biller(query_result):
         "biller_name": biller_name
     }
 
-    url = "http://374d5c5e.ngrok.io/billerprofile/"
+    url = "http://c9c856ac.ngrok.io/billerprofile/"
     r = requests.post(url,input_json)
     json_object = r.json()
     if r.status_code == 201:

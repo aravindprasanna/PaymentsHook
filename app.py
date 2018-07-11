@@ -18,17 +18,45 @@ def webhook():
     query_result = req.get("queryResult")
     action = query_result.get("action")
 
+    resp = ""
     if action == "BillerAdd":
         res = add_biller(query_result)
-    if res:
-        resp = makeResponse("Biller Added Successfully")
-    else:
-        resp = makeResponse("Unsuccessful")
-    res = json.dumps(res,indent=4)
-    r = make_response(res)
+
+        if res:
+            resp = makeResponse("Biller Added Successfully")
+        else:
+            resp = makeResponse("Unsuccessful")
+
+    if action == "MakePayment":
+
+        res = make_payment(query_result)
+
+        if res:
+            resp = makeResponse("Transaction successful")
+        else:
+            resp = makeResponse("Failed")
+
+    resp = json.dumps(resp,indent=4)
+    r = make_response(resp)
     r.headers['Content-Type'] = 'application/json'
 
     return r
+
+def make_payment(query_result):
+
+    input_json = {
+        "user": "hari",
+        "biller_ref": "SP12345",
+        "biller_name": "SP Services"
+    }
+
+    url = "http://374d5c5e.ngrok.io/payments/"
+    r = requests.post(url, input_json)
+    json_object = r.json()
+    if r.status_code == 200:
+        return True
+    else:
+        return False
 
 
 def add_biller(query_result):
